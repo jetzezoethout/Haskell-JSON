@@ -4,33 +4,32 @@
 
 module Classes.FromJson where
 
-import           Classes.Internal.NamedSelector (NamedSelector, prealSelName)
-import           Classes.Strategies             (AsBoundedIntegral (..),
-                                                 AsFractional (..),
-                                                 AsNumeric (..),
-                                                 Enumerating (..), Reading (..))
-import           Control.Monad                  ((>=>))
-import           Data.Data                      (Proxy (..))
+import           Classes.Internal.Support (SupportsJson)
+import           Classes.Strategies       (AsBoundedIntegral (..),
+                                           AsFractional (..), AsNumeric (..),
+                                           Enumerating (..), Reading (..))
+import           Control.Monad            ((>=>))
+import           Data.Data                (Proxy (..))
 import           Data.Int
-import           Data.Json                      (JObject, JValue, Key, asArray,
-                                                 asBool, asInteger, asNumber,
-                                                 asObject, asString, isNull)
-import           Data.Map                       (Map, (!?))
-import qualified Data.Map                       as M
-import           Data.Result                    (mapErrors, parallel, parallel2,
-                                                 parallelTraverse,
-                                                 pattern Success, single)
-import           Data.Text                      (Text)
-import qualified Data.Text                      as T
-import           Data.UnpackResult              (Crumb (..), UnpackResult, nest,
-                                                 rootError)
+import           Data.Json                (JObject, JValue, Key, asArray,
+                                           asBool, asInteger, asNumber,
+                                           asObject, asString, isNull)
+import           Data.Map                 (Map, (!?))
+import qualified Data.Map                 as M
+import           Data.Result              (mapErrors, parallel, parallel2,
+                                           parallelTraverse, pattern Success,
+                                           single)
+import           Data.Text                (Text)
+import qualified Data.Text                as T
+import           Data.UnpackResult        (Crumb (..), UnpackResult, nest,
+                                           rootError)
 import           Data.Word
 import           GHC.Generics
-import           Text.Read                      (readMaybe)
+import           Text.Read                (readMaybe)
 
 class FromJson a where
   fromJson :: JValue -> UnpackResult a
-  default fromJson :: (Generic a, GFromJson (Rep a)) => JValue -> UnpackResult a
+  default fromJson :: (Generic a, SupportsJson (Rep a), GFromJson (Rep a)) => JValue -> UnpackResult a
   fromJson x = to <$> gfromJson x
   defaultValue :: Maybe a
   defaultValue = Nothing
@@ -44,6 +43,12 @@ fromOptionalJson (Just json) = fromJson json
 
 pfromJson :: FromJson a => Proxy a -> JValue -> UnpackResult a
 pfromJson Proxy = fromJson
+
+pSelName ::
+     forall s a p. Selector s
+  => Proxy (M1 S s a p)
+  -> String
+pSelName Proxy = selName (undefined :: M1 S s a p)
 
 class GFromJson f where
   gfromJson :: JValue -> UnpackResult (f p)
@@ -64,16 +69,16 @@ instance GFromJson a => GFromJson (M1 C c a) where
   gfromJson :: GFromJson a => JValue -> UnpackResult (M1 C c a p)
   gfromJson x = M1 <$> gfromJson x
 
-instance (NamedSelector s a, GFromOptionalJson a) => GFromJObject (M1 S s a) where
+instance (Selector s, GFromOptionalJson a) => GFromJObject (M1 S s a) where
   gfromJObject ::
        forall p. GFromOptionalJson a
     => JObject
     -> UnpackResult (M1 S s a p)
   gfromJObject jObject =
-    let fieldName = T.pack (prealSelName (Proxy @(M1 S s a p)))
+    let fieldName = T.pack (pSelName (Proxy @(M1 S s a p)))
      in mapErrors (nest $ Field fieldName) $ M1 <$> gfromOptionalJson (jObject !? fieldName)
 
-deriving anyclass instance (NamedSelector s a, GFromOptionalJson a) => GFromJson (M1 S s a)
+deriving anyclass instance (Selector s, GFromOptionalJson a) => GFromJson (M1 S s a)
 
 instance (GFromJObject a, GFromJObject b) => GFromJObject (a :*: b) where
   gfromJObject :: (GFromJObject a, GFromJObject b) => JObject -> UnpackResult ((a :*: b) p)

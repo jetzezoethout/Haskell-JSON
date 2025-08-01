@@ -4,20 +4,20 @@
 
 module Classes.ToJson where
 
-import           Classes.Internal.NamedSelector
+import           Classes.Internal.Support
 import           Classes.Strategies
 import           Data.Int
-import           Data.Json                      (JObject, JValue (..), Key)
-import           Data.Map                       (Map)
-import qualified Data.Map                       as M
-import           Data.Text                      (Text)
-import qualified Data.Text                      as T
+import           Data.Json                (JObject, JValue (..), Key)
+import           Data.Map                 (Map)
+import qualified Data.Map                 as M
+import           Data.Text                (Text)
+import qualified Data.Text                as T
 import           Data.Word
 import           GHC.Generics
 
 class ToJson a where
   toJson :: a -> JValue
-  default toJson :: (Generic a, GToJson (Rep a)) => a -> JValue
+  default toJson :: (Generic a, SupportsJson (Rep a), GToJson (Rep a)) => a -> JValue
   toJson = gtoJson . from
 
 class GToJson f where
@@ -36,11 +36,11 @@ instance (GToJson a) => GToJson (M1 C c a) where
   gtoJson :: GToJson a => M1 C c a p -> JValue
   gtoJson (M1 x) = gtoJson x
 
-instance (NamedSelector s a, GToJson a) => GToJObject (M1 S s a) where
-  gtoJObject :: (NamedSelector s a, GToJson a) => M1 S s a p -> JObject
-  gtoJObject meta@(M1 x) = M.singleton (T.pack $ realSelName meta) (gtoJson x)
+instance (Selector s, GToJson a) => GToJObject (M1 S s a) where
+  gtoJObject :: (Selector s, GToJson a) => M1 S s a p -> JObject
+  gtoJObject meta@(M1 x) = M.singleton (T.pack $ selName meta) (gtoJson x)
 
-deriving anyclass instance (NamedSelector s a, GToJson a) => GToJson (M1 S s a)
+deriving anyclass instance (Selector s, GToJson a) => GToJson (M1 S s a)
 
 instance ToJson a => GToJson (K1 i a) where
   gtoJson :: ToJson a => K1 i a p -> JValue

@@ -27,7 +27,7 @@ library
                     , Classes.ToJson
                     , Classes.FromJson
                     , Classes.Strategies
-                    , Classes.Internal.NamedSelector
+                    , Classes.Internal.Support
     default-extensions:   OverloadedStrings
                         , PatternSynonyms
                         , DataKinds

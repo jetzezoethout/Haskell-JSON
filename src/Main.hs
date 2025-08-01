@@ -71,7 +71,19 @@ uncapitalize ""       = ""
 uncapitalize (ch:chs) = toLower ch : chs
 
 data Nameless =
-  Nameless Int Bool
+  Nameless Int Int
   deriving stock (Generic)
   -- This is illegal:
+  -- deriving anyclass (ToJson, FromJson)
+
+data Tree a
+  = Leaf
+      { label :: a
+      }
+  | Branch
+      { left  :: Tree a
+      , right :: Tree a
+      }
+  deriving stock (Generic)
+  -- This is also illegal and yields a readable error message:
   -- deriving anyclass (ToJson, FromJson)
