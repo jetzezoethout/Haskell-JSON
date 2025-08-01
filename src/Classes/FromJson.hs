@@ -64,11 +64,16 @@ instance GFromJson a => GFromJson (M1 C c a) where
   gfromJson :: GFromJson a => JValue -> UnpackResult (M1 C c a p)
   gfromJson x = M1 <$> gfromJson x
 
-instance (NamedSelector s, GFromOptionalJson a) => GFromJObject (M1 S s a) where
-  gfromJObject :: GFromOptionalJson a => JObject -> UnpackResult (M1 S s a p)
+instance (NamedSelector s a, GFromOptionalJson a) => GFromJObject (M1 S s a) where
+  gfromJObject ::
+       forall p. GFromOptionalJson a
+    => JObject
+    -> UnpackResult (M1 S s a p)
   gfromJObject jObject =
-    let fieldName = T.pack (prealSelName (Proxy @s))
+    let fieldName = T.pack (prealSelName (Proxy @(M1 S s a p)))
      in mapErrors (nest $ Field fieldName) $ M1 <$> gfromOptionalJson (jObject !? fieldName)
+
+deriving anyclass instance (NamedSelector s a, GFromOptionalJson a) => GFromJson (M1 S s a)
 
 instance (GFromJObject a, GFromJObject b) => GFromJObject (a :*: b) where
   gfromJObject :: (GFromJObject a, GFromJObject b) => JObject -> UnpackResult ((a :*: b) p)

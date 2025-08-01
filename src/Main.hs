@@ -69,3 +69,9 @@ instance Show Color where
 uncapitalize :: String -> String
 uncapitalize ""       = ""
 uncapitalize (ch:chs) = toLower ch : chs
+
+data Nameless =
+  Nameless Int Bool
+  deriving stock (Generic)
+  -- This is illegal:
+  -- deriving anyclass (ToJson, FromJson)

@@ -36,9 +36,11 @@ instance (GToJson a) => GToJson (M1 C c a) where
   gtoJson :: GToJson a => M1 C c a p -> JValue
   gtoJson (M1 x) = gtoJson x
 
-instance (NamedSelector s, GToJson a) => GToJObject (M1 S s a) where
-  gtoJObject :: (NamedSelector s, GToJson a) => M1 S s a p -> JObject
+instance (NamedSelector s a, GToJson a) => GToJObject (M1 S s a) where
+  gtoJObject :: (NamedSelector s a, GToJson a) => M1 S s a p -> JObject
   gtoJObject meta@(M1 x) = M.singleton (T.pack $ realSelName meta) (gtoJson x)
+
+deriving anyclass instance (NamedSelector s a, GToJson a) => GToJson (M1 S s a)
 
 instance ToJson a => GToJson (K1 i a) where
   gtoJson :: ToJson a => K1 i a p -> JValue
