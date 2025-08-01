@@ -1,9 +1,3 @@
-{-# LANGUAGE DataKinds            #-}
-{-# LANGUAGE DeriveGeneric        #-}
-{-# LANGUAGE FlexibleInstances    #-}
-{-# LANGUAGE InstanceSigs         #-}
-{-# LANGUAGE TypeFamilies         #-}
-{-# LANGUAGE TypeOperators        #-}
 {-# LANGUAGE UndecidableInstances #-}
 
 module Metadata where
@@ -43,7 +37,7 @@ data TaggedMaybe a
   | HereItIs
       { value :: a
       }
-  deriving (Generic)
+  deriving stock (Generic)
 -- test :: IO ()
 -- test = do
 --   let okValue = HereItIs 42

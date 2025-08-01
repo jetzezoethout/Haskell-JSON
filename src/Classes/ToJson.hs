@@ -1,12 +1,6 @@
-{-# LANGUAGE DefaultSignatures  #-}
-{-# LANGUAGE DeriveAnyClass     #-}
-{-# LANGUAGE DerivingVia        #-}
-{-# LANGUAGE FlexibleContexts   #-}
-{-# LANGUAGE FlexibleInstances  #-}
-{-# LANGUAGE InstanceSigs       #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TypeFamilies       #-}
-{-# LANGUAGE TypeOperators      #-}
+{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DerivingVia       #-}
 
 module Classes.ToJson where
 
@@ -54,7 +48,7 @@ instance (GToJObject a, GToJObject b) => GToJObject (a :*: b) where
   gtoJObject :: (GToJObject a, GToJObject b) => (a :*: b) p -> JObject
   gtoJObject (a :*: b) = gtoJObject a `M.union` gtoJObject b
 
-deriving instance (GToJObject a, GToJObject b) => GToJson (a :*: b)
+deriving anyclass instance (GToJObject a, GToJObject b) => GToJson (a :*: b)
 
 instance ToJson JValue where
   toJson :: JValue -> JValue

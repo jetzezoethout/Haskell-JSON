@@ -1,7 +1,3 @@
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE InstanceSigs               #-}
-{-# LANGUAGE PatternSynonyms            #-}
-
 module Data.Result
   ( pattern Success
   , pattern Failure
@@ -17,7 +13,7 @@ import           Data.List.NonEmpty (NonEmpty, singleton, toList)
 
 newtype Result e a =
   Result (Either (NonEmpty e) a)
-  deriving (Functor, Applicative, Monad)
+  deriving newtype (Functor, Applicative, Monad)
 
 pattern Success :: a -> Result e a
 pattern Success value = Result (Right value)
@@ -26,7 +22,6 @@ pattern Failure :: NonEmpty e -> Result e a
 pattern Failure errors = Result (Left errors)
 
 {-# COMPLETE Success, Failure #-}
-
 instance (Show a, Show e) => Show (Result e a) where
   show :: (Show a, Show e) => Result e a -> String
   show (Failure errors) = "Failure " <> show (toList errors)

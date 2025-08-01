@@ -1,12 +1,6 @@
 {-# LANGUAGE DefaultSignatures #-}
 {-# LANGUAGE DeriveAnyClass    #-}
-{-# LANGUAGE DeriveGeneric     #-}
 {-# LANGUAGE DerivingVia       #-}
-{-# LANGUAGE FlexibleContexts  #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE InstanceSigs      #-}
-{-# LANGUAGE TypeApplications  #-}
-{-# LANGUAGE TypeOperators     #-}
 
 module GenericExample where
 
@@ -16,7 +10,7 @@ import           GHC.Generics
 data Bit
   = O
   | I
-  deriving (Show)
+  deriving stock (Show)
 
 class Serialize a where
   put :: a -> [Bit]
@@ -47,7 +41,8 @@ data UserTree a
       , left  :: UserTree a
       , right :: UserTree a
       }
-  deriving (Generic, Generic1, Serialize, Show, HasDataTypeName)
+  deriving stock (Generic, Generic1, Show)
+  deriving anyclass (Serialize, HasDataTypeName)
 
 class GSerialize f where
   gput :: f p -> [Bit]
@@ -105,7 +100,7 @@ test = do
   print $ fst $ getp (Proxy :: Proxy (UserTree Bool)) $ put myTree
   print $ from myTree
   print $ getName myTree
-  print $ getName (Just "hello")
+  print $ getName (Just ("hello" :: String))
   print $ getName True
   print $ getName []
   print $ getName Good
@@ -130,7 +125,7 @@ instance HasDataTypeName Bool
 instance HasDataTypeName [a]
 
 data MyData
-  deriving (Generic)
+  deriving stock (Generic)
   deriving anyclass (HasDataTypeName)
 
 newtype EnumWrapper a = EnumWrapper
@@ -145,7 +140,7 @@ data MyEnum
   = Good
   | Bad
   | Terrible
-  deriving (Enum)
+  deriving stock (Enum)
   deriving (HasDataTypeName) via EnumWrapper MyEnum
 
 newtype ShowWrapper a = ShowWrapper
@@ -162,5 +157,5 @@ data MyShowable
   | Green
       { henk :: Int
       }
-  deriving (Show)
+  deriving stock (Show)
   deriving (HasDataTypeName) via ShowWrapper MyShowable

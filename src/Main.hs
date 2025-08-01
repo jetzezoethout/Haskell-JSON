@@ -1,9 +1,6 @@
-{-# LANGUAGE DeriveAnyClass             #-}
-{-# LANGUAGE DeriveGeneric              #-}
-{-# LANGUAGE DerivingVia                #-}
-{-# LANGUAGE DuplicateRecordFields      #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE InstanceSigs               #-}
+{-# LANGUAGE DeriveAnyClass        #-}
+{-# LANGUAGE DerivingVia           #-}
+{-# LANGUAGE DuplicateRecordFields #-}
 
 module Main where
 
@@ -22,17 +19,20 @@ data Person addr = Person
   , age     :: Int
   , address :: addr
   , pets    :: [Text]
-  } deriving (Generic, Show, Eq, ToJson, FromJson)
+  } deriving stock (Generic, Show, Eq)
+    deriving anyclass (ToJson, FromJson)
 
 data Address = Address
   { line1 :: Text
   , line2 :: Maybe Text
-  } deriving (Generic, Show, Eq, ToJson, FromJson)
+  } deriving stock (Generic, Show, Eq)
+    deriving anyclass (ToJson, FromJson)
 
 data StrictAddress = StrictAddress
   { line1 :: Address
   , line2 :: Text
-  } deriving (Generic, Show, Eq, ToJson, FromJson)
+  } deriving stock (Generic, Show, Eq)
+    deriving anyclass (ToJson, FromJson)
 
 main :: IO ()
 main = do
@@ -50,7 +50,7 @@ data ColorOptions
   = Red
   | Green
   | Blue
-  deriving (Show, Enum, Bounded)
+  deriving stock (Show, Enum, Bounded)
 
 newtype Color =
   Color ColorOptions

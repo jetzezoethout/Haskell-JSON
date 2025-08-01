@@ -31,7 +31,7 @@ data JValue
   | JNumber JNumber
   | JBool Bool
   | JNull
-  deriving (Show)
+  deriving stock (Show)
 
 jsonType :: JValue -> Text
 jsonType (JObject _) = "object"

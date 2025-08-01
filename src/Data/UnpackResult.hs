@@ -1,6 +1,3 @@
-{-# LANGUAGE InstanceSigs    #-}
-{-# LANGUAGE RecordWildCards #-}
-
 module Data.UnpackResult where
 
 import           Data.List   (foldl')
@@ -11,7 +8,6 @@ import qualified Data.Text   as T
 data Crumb
   = Field Text
   | Index Int
-  -- deriving (Show)
 
 instance Show Crumb where
   show :: Crumb -> String

@@ -1,16 +1,6 @@
-{-# LANGUAGE DefaultSignatures   #-}
-{-# LANGUAGE DeriveAnyClass      #-}
-{-# LANGUAGE DerivingVia         #-}
-{-# LANGUAGE FlexibleContexts    #-}
-{-# LANGUAGE FlexibleInstances   #-}
-{-# LANGUAGE InstanceSigs        #-}
-{-# LANGUAGE OverloadedStrings   #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving  #-}
-{-# LANGUAGE TupleSections       #-}
-{-# LANGUAGE TypeApplications    #-}
-{-# LANGUAGE TypeFamilies        #-}
-{-# LANGUAGE TypeOperators       #-}
+{-# LANGUAGE DefaultSignatures #-}
+{-# LANGUAGE DeriveAnyClass    #-}
+{-# LANGUAGE DerivingVia       #-}
 
 module Classes.FromJson where
 
@@ -84,7 +74,7 @@ instance (GFromJObject a, GFromJObject b) => GFromJObject (a :*: b) where
   gfromJObject :: (GFromJObject a, GFromJObject b) => JObject -> UnpackResult ((a :*: b) p)
   gfromJObject jObject = parallel2 (:*:) (gfromJObject jObject) (gfromJObject jObject)
 
-deriving instance (GFromJObject a, GFromJObject b) => GFromJson (a :*: b)
+deriving anyclass instance (GFromJObject a, GFromJObject b) => GFromJson (a :*: b)
 
 instance FromJson a => GFromOptionalJson (K1 i a) where
   gfromOptionalJson :: FromJson a => Maybe JValue -> UnpackResult (K1 i a p)
