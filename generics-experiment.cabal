@@ -18,10 +18,23 @@ common warnings
 library
     import:           warnings
     exposed-modules:  MyLib
+                    , Main
                     , GenericExample
                     , Metadata
+                    , Data.Json
+                    , Data.UnpackResult
+                    , Data.Result
+                    , Classes.ToJson
+                    , Classes.FromJson
+                    , Classes.Strategies
+                    , Classes.Internal.NamedSelector
+    default-extensions:   OverloadedStrings
+                        , PatternSynonyms
     -- other-modules:
     -- other-extensions:
     build-depends:    base ^>=4.18.3.0
+                    , text
+                    , containers
+                    , mtl
     hs-source-dirs:   src
     default-language: Haskell2010
